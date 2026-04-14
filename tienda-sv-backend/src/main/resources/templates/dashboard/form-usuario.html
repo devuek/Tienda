@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Usuario — TiendaSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --panel: #14121d;
+            --border: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --muted: #8b8b93;
+            --cyan: #00f0ff;
+            --purple: #bc13fe;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px 20px; display: flex; justify-content: center; }
+        
+        .form-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        
+        h1 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+        p.subtitle { color: var(--muted); margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--muted); font-size: 0.9rem; }
+        input, textarea, select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        input:focus, textarea:focus, select:focus { 
+            border-color: var(--purple); 
+            outline: none; 
+            background: rgba(255,255,255,0.08); 
+        }
+        
+        option {
+            background: var(--panel);
+            color: white;
+        }
+        
+        .btn-save {
+            background: var(--purple);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        .btn-save:hover { transform: translateY(-2px); }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h1 th:text="${u != null ? '👤 Editar Usuario' : '👤 Nuevo Usuario'}">👤 Nuevo Usuario</h1>
+        <p class="subtitle" th:text="${u != null ? 'Modifica los permisos o datos del usuario.' : 'Registra personal administrativo o clientes autorizados.'}"></p>
+        
+        <form id="usuarioForm" th:action="@{/admin/usuarios/ui/guardar}" method="post">
+            <input type="hidden" name="id" th:if="${u != null}" th:value="${u.id}">
+            
+            <div class="form-group">
+                <label>Nombre de Usuario</label>
+                <input type="text" name="username" id="usernameField" placeholder="Ej: mario_sv" 
+                       th:value="${u != null ? u.username : ''}" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" name="email" id="emailField" placeholder="mario@tienda.sv" 
+                       th:value="${u != null ? u.email : ''}" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Rol del Usuario</label>
+                <select name="rolId" required>
+                    <option th:each="rol : ${roles}" 
+                            th:value="${rol.id}" 
+                            th:text="${rol.nombre}"
+                            th:selected="${u != null && u.rol != null && u.rol.id == rol.id}"></option>
+                </select>
+            </div>
+            
+            <div class="form-group" th:if="${u == null}">
+                <label>Contraseña Temporal</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+            
+            <button type="button" onclick="confirmarUsuario()" class="btn-save"
+                    th:text="${u != null ? 'Actualizar Usuario' : 'Crear Usuario'}">Crear Usuario</button>
+        </form>
+        
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script th:inline="javascript">
+            function confirmarUsuario() {
+                const isEdit = /*[[${u != null}]]*/ false;
+                const username = document.getElementById('usernameField').value;
+
+                Swal.fire({
+                    title: isEdit ? '¿Actualizar usuario?' : '¿Confirmar registro?',
+                    text: isEdit ? `Se modificarán los permisos de "${username}".` : `Se creará el acceso para "${username}".`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#bc13fe',
+                    cancelButtonColor: '#ff5252',
+                    confirmButtonText: isEdit ? 'Sí, actualizar' : 'Sí, crear',
+                    cancelButtonText: 'Cancelar',
+                    background: '#14121d',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('usuarioForm').submit();
+                    }
+                });
+            }
+        </script>
+        
+        <a th:href="@{/dashboard/usuarios}" class="back-link">← Volver al Panel</a>
+    </div>
+</body>
+</html>

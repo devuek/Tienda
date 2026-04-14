@@ -1,0 +1,45 @@
+server:
+  port: 8080
+  
+spring:
+  thymeleaf:
+    cache: false # 🚀 Desactiva el caché para cambios en tiempo real
+  application:
+    name: tienda
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/tienda_sv?createDatabaseIfNotExist=true&serverTimezone=UTC}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: always # Spring ejecutará schema.sql automáticamente al arrancar
+  jpa:
+    hibernate:
+      ddl-auto: update # Cambiado a update para que Hibernate cree/ajuste las tablas
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+logging:
+  file:
+    name: logs/tienda.log
+  level:
+    com.sv.tienda: DEBUG
+    org.springframework.security: DEBUG
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:super_secret_development_key}
+    expiration-ms: 86400000
+  payment:
+    pagadito:
+      uid: ${PAGADITO_UID:""}
+      wsk: ${PAGADITO_WSK:""}
+      base-url: "https://sandbox.pagadito.com"
+    wompi:
+      public-key: ${WOMPI_PUBLIC_KEY:""}
+      private-key: ${WOMPI_PRIVATE_KEY:""}
+      base-url: "https://api.wompi.sv/v1"

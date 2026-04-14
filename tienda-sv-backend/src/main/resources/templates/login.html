@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${esStaff} ? 'Panel Staff — TiendaSV' : 'Iniciar Sesión — TiendaSV'">Iniciar Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:     #0d0f1a;
+            --surface:rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.09);
+            --cyan:   #00f0ff;
+            --purple: #9d00ff;
+            --orange: #ff8c00;
+            --text:   #ffffff;
+            --muted:  #a0a5b5;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 50px 45px;
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+        }
+
+        .logo {
+            font-size: 1.9rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 6px;
+            color: var(--cyan);
+        }
+
+        /* Badge de modo staff */
+        .staff-badge {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .staff-badge span {
+            display: inline-block;
+            padding: 4px 14px;
+            background: rgba(255,140,0,0.15);
+            border: 1px solid rgba(255,140,0,0.35);
+            border-radius: 20px;
+            color: var(--orange);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 35px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .alert-error  { background:rgba(255,60,60,0.1);  border:1px solid rgba(255,60,60,0.3);  color:#ff6b6b; }
+        .alert-success{ background:rgba(0,240,100,0.1);  border:1px solid rgba(0,240,100,0.3);  color:#00f064; }
+
+        .form-group { margin-bottom: 22px; }
+        label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px 16px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+        input:focus {
+            border-color: var(--cyan);
+            box-shadow: 0 0 0 3px rgba(0,240,255,0.1);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: var(--purple);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.3s, transform 0.2s;
+            margin-top: 6px;
+        }
+        .btn-login:hover  { opacity:0.9; transform:translateY(-2px); }
+        .btn-login:active { transform:scale(0.98); }
+
+        .divider {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin: 22px 0;
+            position: relative;
+        }
+        .divider::before, .divider::after {
+            content:'';
+            position:absolute;
+            top:50%;
+            width:38%;
+            height:1px;
+            background:var(--border);
+        }
+        .divider::before { left:0; }
+        .divider::after  { right:0; }
+
+        .btn-register {
+            display: block;
+            text-align: center;
+            width: 100%;
+            padding: 13px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--muted);
+            font-size: 0.92rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s;
+        }
+        .btn-register:hover {
+            border-color: var(--cyan);
+            color: var(--text);
+            background: rgba(0,240,255,0.05);
+        }
+
+        /* Caja de credenciales visible SOLO para staff */
+        .hint-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 25px;
+        }
+        .hint-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .hint-box p {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-bottom: 4px;
+            line-height: 1.6;
+        }
+        .hint-box strong { color: var(--orange); }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 22px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.82rem;
+            transition: color 0.3s;
+        }
+        .back-link:hover { color: var(--text); }
+
+        /* Ver/Ocultar Contraseña */
+        .password-field-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-field-container input {
+            padding-right: 55px !important;
+        }
+        .btn-toggle-password {
+            position: absolute;
+            right: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            padding: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
+        }
+        .btn-toggle-password:hover {
+            border-color: var(--cyan);
+            color: var(--text);
+            background: rgba(0,240,255,0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+
+        <div class="logo">TiendaSV.</div>
+
+        <!-- Badge visible solo para el panel de staff -->
+        <div class="staff-badge" th:if="${esStaff}">
+            <span>Acceso Restringido — Solo Personal</span>
+        </div>
+
+        <p class="subtitle"
+           th:text="${esStaff} ? 'Ingresa tus credenciales de administración.' : 'Bienvenido de vuelta a tu cuenta.'">
+        </p>
+
+        <!-- Alertas -->
+        <div th:if="${errorMsg}"  class="alert alert-error"  th:text="${errorMsg}"></div>
+        <div th:if="${logoutMsg}" class="alert alert-success" th:text="${logoutMsg}"></div>
+        <div th:if="${param.success}" class="alert alert-success">✨ ¡Cuenta creada con éxito! Ya puedes iniciar sesión.</div>
+
+        <!-- Formulario unificado: el action cambia según quién entra -->
+        <form th:action="@{/do-login}" method="post">
+
+            <!-- Campo oculto para que Spring sepa de qué página viene (futuro uso) -->
+            <input type="hidden" name="loginSource"
+                   th:value="${esStaff} ? 'staff' : 'cliente'">
+
+            <div class="form-group">
+                <label for="username">Usuario</label>
+                <input type="text" id="username" name="username"
+                       th:placeholder="${esStaff} ? 'admin / cajero' : 'Tu nombre de usuario'"
+                       required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <div class="password-field-container">
+                    <input type="password" id="password" name="password"
+                           placeholder="••••••••" required>
+                    <button type="button" class="btn-toggle-password" id="toggle-password-btn" onclick="togglePass('password', this)">
+                        <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn-login">
+                <span th:text="${esStaff} ? 'Acceder al Panel' : 'Iniciar Sesión'">Iniciar Sesión</span>
+            </button>
+        </form>
+
+        <!-- Opción de registro: SOLO visible en login de clientes -->
+        <div th:if="${!esStaff}">
+            <div class="divider">o</div>
+            <a href="/registro" class="btn-register">Crear una cuenta nueva</a>
+        </div>
+
+        <!-- Credenciales de prueba eliminadas por seguridad -->
+        <a href="/" class="back-link">← Volver a la tienda</a>
+    </div>
+
+    <script>
+        function togglePass(inputId, btn) {
+            const passInput = document.getElementById(inputId);
+            const isPassword = passInput.type === 'password';
+            
+            passInput.type = isPassword ? 'text' : 'password';
+            
+            // Cambiar icono SVG
+            if (isPassword) {
+                btn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                `;
+            } else {
+                btn.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

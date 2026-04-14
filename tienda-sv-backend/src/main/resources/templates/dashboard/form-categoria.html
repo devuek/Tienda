@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Categoría — TiendaSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --panel: #14121d;
+            --border: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --muted: #8b8b93;
+            --cyan: #00f0ff;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        
+        .form-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        
+        h1 { font-size: 2rem; font-weight: 800; margin-bottom: 8px; color: var(--cyan); }
+        p.subtitle { color: var(--muted); margin-bottom: 30px; font-size: 0.95rem; }
+        
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--muted); font-size: 0.9rem; letter-spacing: 0.5px; }
+        input, textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        input:focus, textarea:focus { 
+            border-color: var(--cyan); 
+            outline: none; 
+            background: rgba(255,255,255,0.06); 
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+        }
+        
+        .btn-save {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            padding: 16px;
+            border-radius: 50px;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            font-size: 1.05rem;
+            margin-top: 10px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-save:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 240, 255, 0.2); }
+        .btn-save:active { transform: translateY(-1px); }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .back-link:hover { color: var(--cyan); }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h1 th:text="${c != null ? '🏷️ Editar Categoría' : '🏷️ Nueva Categoría'}">🏷️ Categoría</h1>
+        <p class="subtitle">Clasifica el inventario de Tienda SV para una mejor gestión de ventas.</p>
+        
+        <form id="categoriaForm" th:action="@{/admin/categorias/guardar}" method="post">
+            <input type="hidden" name="id" th:if="${c != null}" th:value="${c.id}">
+            
+            <div class="form-group">
+                <label>Nombre de la Categoría</label>
+                <input type="text" name="nombre" id="nombreCat" placeholder="Ej: Electrónicos, Hogar..." 
+                       th:value="${c != null ? c.nombre : ''}" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea name="descripcion" rows="4" placeholder="Breve descripción del catálogo (opcional)" 
+                          th:text="${c != null ? c.descripcion : ''}"></textarea>
+            </div>
+            
+            <button type="button" onclick="validarYEnviar()" class="btn-save" 
+                    th:text="${c != null ? 'Actualizar Categoría' : 'Crear Categoría'}">Crear Categoría</button>
+        </form>
+        
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script th:inline="javascript">
+            function validarYEnviar() {
+                const isEdit = /*[[${c != null}]]*/ false;
+                const nombre = document.getElementById('nombreCat').value;
+                if (!nombre) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Campo Requerido',
+                        text: 'Por favor, asigne un nombre a la categoría.',
+                        background: '#14121d',
+                        color: '#fff',
+                        confirmButtonColor: '#00f0ff'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: isEdit ? '¿Confirmar actualización?' : '¿Confirmar creación?',
+                    text: isEdit ? `Se actualizarán los datos de "${nombre}".` : `Se creará la categoría "${nombre}" en el sistema.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#00f0ff',
+                    cancelButtonColor: '#ff5252',
+                    confirmButtonText: isEdit ? 'Sí, actualizar' : 'Sí, crear ahora',
+                    cancelButtonText: 'Revisar',
+                    background: '#14121d',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('categoriaForm').submit();
+                    }
+                });
+            }
+        </script>
+        
+        <a th:href="@{/dashboard/categorias}" class="back-link">← Cancelar y Volver</a>
+    </div>
+</body>
+</html>

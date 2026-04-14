@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios — TiendaSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --panel: #14121d;
+            --border: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --muted: #8b8b93;
+            --purple: #bc13fe;
+            --green: #00ff88;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px; }
+        
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        h1 { font-size: 2.2rem; font-weight: 800; }
+        
+        .btn-new {
+            background: var(--purple);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn-new:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(188, 19, 254, 0.3); }
+        
+        table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+        th, td { text-align: left; padding: 18px; border-bottom: 1px solid var(--border); }
+        th { background: rgba(255,255,255,0.02); color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .badge { padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; }
+        .badge-active { background: rgba(0, 255, 136, 0.1); color: var(--green); }
+        .badge-role { background: rgba(255, 255, 255, 0.05); color: var(--muted); }
+        
+        .back-link { display: inline-block; margin-top: 30px; color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👥 Personal y Usuarios</h1>
+            <a href="/dashboard/usuarios/nuevo" class="btn-new">+ Crear Nuevo</a>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre de Usuario</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${usuarios}">
+                    <td th:text="${u.id}" style="color:var(--muted)">1</td>
+                    <td>
+                        <div style="font-weight: 600;" th:text="${u.username}">admin</div>
+                    </td>
+                    <td th:text="${u.email}" style="color:var(--muted)">admin@tienda.sv</td>
+                    <td>
+                        <span class="badge badge-role" th:text="${u.rol != null ? u.rol.nombre : 'SIN ROL'}">ADMIN</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-active" th:if="${u.estado}">Activo</span>
+                        <span class="badge" th:unless="${u.estado}" style="background:rgba(255,0,0,0.1); color:#ff4444;">Inactivo</span>
+                    </td>
+                    <td>
+                        <a href="#" style="color:var(--purple); text-decoration: none; font-weight: 700; font-size: 0.85rem;">Editar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <a href="/dashboard" class="back-link">← Volver al Dashboard</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Producto — TiendaSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --panel: #14121d;
+            --border: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --muted: #8b8b93;
+            --cyan: #00f0ff;
+            --purple: #bc13fe;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px 20px; display: flex; justify-content: center; }
+        
+        .form-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        
+        h1 { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+        p.subtitle { color: var(--muted); margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--muted); font-size: 0.9rem; }
+        input, textarea, select {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        input:focus, textarea:focus, select:focus { 
+            border-color: var(--cyan); 
+            outline: none; 
+            background: rgba(255,255,255,0.08); 
+        }
+        
+        option {
+            background: var(--panel);
+            color: white;
+        }
+        
+        .btn-save {
+            background: var(--cyan);
+            color: var(--bg);
+            border: none;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        .btn-save:hover { transform: translateY(-2px); }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: white; }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h1 th:text="${p != null ? '📦 Editar Producto' : '📦 Nuevo Producto'}">📦 Nuevo Producto</h1>
+        <p class="subtitle" th:text="${p != null ? 'Modifica los detalles del artículo en el catálogo.' : 'Agrega un nuevo artículo al catálogo de Tienda SV.'}"></p>
+        
+        <form id="productoForm" th:action="@{/admin/productos/ui/guardar}" method="post">
+            <input type="hidden" name="id" th:if="${p != null}" th:value="${p.id}">
+            
+            <div class="form-group">
+                <label>Nombre del Producto</label>
+                <input type="text" name="nombre" id="nombreProd" placeholder="Ej: Smartphone Ultra G5" 
+                       th:value="${p != null ? p.nombre : ''}" required>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                <div class="form-group">
+                    <label>Precio (USD)</label>
+                    <input type="number" name="precio" id="precioProd" step="0.01" placeholder="0.00" 
+                           th:value="${p != null ? p.precio : ''}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Stock Inicial</label>
+                    <input type="number" name="stock" id="stockProd" placeholder="10" 
+                           th:value="${p != null ? p.stock : ''}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Categoría</label>
+                <select name="categoriaId" required>
+                    <option value="" disabled th:selected="${p == null}">Seleccione una categoría</option>
+                    <option th:each="cat : ${categorias}" 
+                            th:value="${cat.id}" 
+                            th:text="${cat.nombre}"
+                            th:selected="${p != null && p.categoria != null && p.categoria.id == cat.id}"></option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea name="descripcion" rows="4" placeholder="Detalles técnicos, garantía, etc."
+                          th:text="${p != null ? p.descripcion : ''}"></textarea>
+            </div>
+            
+            <button type="button" onclick="confirmarProducto()" class="btn-save"
+                    th:text="${p != null ? 'Actualizar Inventario' : 'Guardar Inventario'}">Guardar Inventario</button>
+        </form>
+        
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script th:inline="javascript">
+            function confirmarProducto() {
+                const isEdit = /*[[${p != null}]]*/ false;
+                const nombre = document.getElementById('nombreProd').value;
+                const precio = document.getElementById('precioProd').value;
+                const stock = document.getElementById('stockProd').value;
+
+                if (!nombre || !precio || !stock) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Campos Incompletos',
+                        text: 'Nombre, Precio y Stock son obligatorios.',
+                        background: '#14121d',
+                        color: '#fff',
+                        confirmButtonColor: '#00f0ff'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: isEdit ? '¿Confirmar actualización?' : '¿Confirmar Carga?',
+                    text: isEdit ? `Se actualizarán los datos de "${nombre}".` : `Se registrará "${nombre}" por un valor de $${precio}.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#00f0ff',
+                    cancelButtonColor: '#ff5252',
+                    confirmButtonText: isEdit ? 'Sí, actualizar' : 'Sí, guardar',
+                    cancelButtonText: 'Revisar',
+                    background: '#14121d',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('productoForm').submit();
+                    }
+                });
+            }
+        </script>
+        <a th:href="@{/dashboard/productos}" class="back-link">← Cancelar y Volver</a>
+    </div>
+</body>
+</html>

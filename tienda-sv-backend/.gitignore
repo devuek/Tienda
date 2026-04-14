@@ -1,0 +1,19 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+log/
+logs/
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+
+# Environment Variables
+.env
+.env.local
+
+# MacOS
+.DS_Store

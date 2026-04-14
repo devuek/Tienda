@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración de Pagos — TiendaSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --panel: #14121d;
+            --border: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --muted: #8b8b93;
+            --orange: #ff8c00;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px; }
+        
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 30px; }
+        
+        .gateway-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+        .gateway-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .gateway-title { font-size: 1.2rem; font-weight: 700; color: var(--orange); }
+        
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 0.8rem; }
+        input { width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 8px; color: #fff; }
+        
+        button { padding: 10px 20px; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-update { background: var(--orange); color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💳 Pasarelas de Pago</h1>
+        
+        <div class="gateway-card">
+            <div class="gateway-header">
+                <p class="gateway-title">Pagadito (El Salvador)</p>
+                <button class="btn-update">Actualizar API</button>
+            </div>
+            <div class="input-group">
+                <label>UID del Comercio</label>
+                <input type="text" value="382-921-102-390" readonly>
+            </div>
+            <div class="input-group">
+                <label>Clave WSK (Sandbox)</label>
+                <input type="password" value="************************" readonly>
+            </div>
+        </div>
+        
+        <div class="gateway-card">
+            <div class="gateway-header">
+                <p class="gateway-title" style="color:#6366f1;">Wompi (Banco Agrícola)</p>
+                <button class="btn-update" style="background:#5850ec">Actualizar API</button>
+            </div>
+            <div class="input-group">
+                <label>Public Key</label>
+                <input type="text" value="pub_test_8s2k1092..." readonly>
+            </div>
+        </div>
+        
+        <a href="/dashboard" style="color:var(--muted); text-decoration:none;">← Volver al Inicio</a>
+    </div>
+</body>
+</html>

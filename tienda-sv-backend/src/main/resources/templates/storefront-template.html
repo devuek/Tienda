@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda SV - E-Commerce Mockup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0f1a;
+            --surface-color: rgba(255, 255, 255, 0.03);
+            --surface-border: rgba(255, 255, 255, 0.08);
+            --accent-glow: #00f0ff;
+            --accent-purple: #9d00ff;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a5b5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 15, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--surface-border);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--accent-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .cart-btn {
+            background: rgba(0, 240, 255, 0.05);
+            border: 2px solid var(--accent-glow);
+            color: var(--accent-glow);
+            padding: 8px 20px;
+            border-radius: 8px;
+            /* Cambiado de 50px */
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .cart-btn:hover {
+            background: var(--accent-glow);
+            color: var(--bg-color);
+        }
+
+        .cart-btn.pop {
+            transform: scale(1.1);
+        }
+
+        /* Botones de autenticación en navbar */
+        .nav-auth {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-signin {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: var(--text-secondary);
+            padding: 8px 20px;
+            border-radius: 8px;
+            /* Cambiado de 50px */
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-signin:hover {
+            border-color: var(--text-primary);
+            color: var(--text-primary);
+        }
+
+        .btn-signup {
+            background: var(--bg-color);
+            /* Fondo oscuro */
+            border: 2px solid var(--accent-purple);
+            /* Borde fuerte */
+            color: var(--text-primary);
+            padding: 8px 22px;
+            border-radius: 8px;
+            /* Cambiado de 50px */
+            font-weight: 800;
+            font-size: 0.88rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-signup:hover {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        /* Hamburguesa Toggle */
+        .menu-toggle-btn {
+            display: none;
+            background: none;
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 5%;
+            margin-top: 60px;
+        }
+
+        header h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .cta-btn {
+            background: var(--accent-purple);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            opacity: 0.9;
+        }
+
+        /* Product Grid */
+        .products-section {
+            padding: 100px 5%;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 20px;
+            padding: 20px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            background: #1a1c29;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            color: var(--surface-border);
+        }
+
+        .product-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .product-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            min-height: 40px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-glow);
+        }
+
+        .add-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--surface-border);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .qty-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .qty-input {
+            width: 50px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            color: white;
+            padding: 8px;
+            text-align: center;
+            outline: none;
+        }
+
+        .qty-input:focus {
+            border-color: var(--accent-glow);
+        }
+
+        .add-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-color);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 5000;
+        }
+
+        .toast {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--accent-glow);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateX(-150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--surface-border);
+            padding: 60px 5%;
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 50px;
+        }
+
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .payment-badge {
+            padding: 5px 15px;
+            background: var(--surface-color);
+            border: 1px solid var(--surface-border);
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Drawer del Carrito */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cart-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: var(--bg-color);
+            border-left: 1px solid var(--surface-border);
+            z-index: 1001;
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .cart-overlay.active .cart-drawer {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .cart-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-cart:hover {
+            color: var(--text-primary);
+        }
+
+        .cart-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .cart-item-info h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-info p {
+            font-size: 0.85rem;
+            color: var(--accent-glow);
+            font-weight: 600;
+        }
+
+        .remove-item {
+            background: rgba(255, 82, 82, 0.1);
+            color: #ff5252;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .remove-item:hover {
+            background: #ff5252;
+            color: white;
+        }
+
+        .cart-footer {
+            padding-top: 20px;
+            border-top: 1px solid var(--surface-border);
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .btn-checkout {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.3s;
+        }
+
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            opacity: 0.9;
+        }
+
+        .empty-cart-msg {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 50px;
+        }
+
+        /* ── RESPONSIVE MEDIA QUERIES ────────────────── */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 5%;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .btn-signin {
+                display: none;
+            }
+
+            .menu-toggle-btn {
+                display: block;
+            }
+
+            header {
+                min-height: 80vh;
+                padding-top: 100px;
+            }
+
+            header h1 {
+                font-size: 2.5rem;
+            }
+
+            header p {
+                font-size: 1rem;
+                margin-bottom: 30px;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+                margin-bottom: 30px;
+            }
+
+            .products-section {
+                padding: 50px 5%;
+            }
+
+            .cart-drawer {
+                width: 100%;
+                right: -100%;
+                padding: 20px;
+            }
+
+            .product-card {
+                padding: 15px;
+            }
+
+            .product-img {
+                height: 160px;
+                font-size: 2.5rem;
+            }
+
+            .toast-container {
+                top: 20px;
+                left: 10px;
+                right: 10px;
+                width: auto;
+            }
+
+            .toast {
+                width: 100%;
+                left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">TiendaSV.</div>
+        <div class="nav-links">
+            <a href="/" th:class="${catActiva == null ? 'active' : ''}">Todo</a>
+            <a th:each="c : ${categorias}" 
+               th:href="'/?cat=' + ${c.nombre}" 
+               th:text="${c.nombre}"
+               th:class="${catActiva == c.nombre ? 'active' : ''}">Categoría</a>
+        </div>
+        <div class="nav-auth">
+            <button class="menu-toggle-btn" id="mainMenuBtn">☰</button>
+            <button class="cart-btn" id="cartBtn" onclick="toggleCart(true)">Carrito (<span
+                    id="cartCount">0</span>)</button>
+
+            <!-- Mostrar solo si NO ha iniciado sesión -->
+            <th:block sec:authorize="!isAuthenticated()">
+                <a href="/login" class="btn-signin" id="btnSignIn">Iniciar sesión</a>
+                <a href="/registro" class="btn-signup" id="btnSignUp">Registrarse</a>
+            </th:block>
+
+            <!-- Mostrar solo SI YA inició sesión -->
+            <th:block sec:authorize="isAuthenticated()">
+                <a href="/dashboard/pedidos" class="btn-signup" style="background:var(--accent-glow); color:var(--bg-color);">Mis Pedidos</a>
+                <a href="/logout" class="btn-signin" style="background:none; border:1px solid var(--border-color); margin-left:10px;">Salir</a>
+            </th:block>
+        </div>
+    </nav>
+
+    <!-- Drawer del Carrito (Solo se cierra con la X) -->
+    <div class="cart-overlay" id="cartOverlay">
+        <div class="cart-drawer">
+            <div class="cart-header">
+                <h2>Tu Resumen</h2>
+                <button class="close-cart" onclick="toggleCart(false)">&times;</button>
+            </div>
+
+            <div class="cart-list" id="cartList">
+                <!-- Se llena dinámicamente -->
+                <div class="empty-cart-msg">Tu carrito está vacío </div>
+            </div>
+
+            <div class="cart-total">
+                <div style="margin-bottom: 20px;">
+                    <label style="display:block; font-size:0.8rem; color:var(--text-secondary); margin-bottom:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Método de Pago:</label>
+                    <div class="payment-selector" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div class="pay-option active" id="payManual" onclick="selectPayment('manual')" style="background:rgba(255,255,255,0.05); border:1px solid var(--accent-glow); padding:12px; border-radius:12px; cursor:pointer; text-align:center; transition:0.3s;">
+                            <div style="font-size:1.2rem; margin-bottom:5px;">💵</div>
+                            <div style="font-size:0.75rem; font-weight:600;">Pago Manual</div>
+                        </div>
+                        <div class="pay-option" id="payOnline" onclick="selectPayment('online')" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); padding:12px; border-radius:12px; cursor:pointer; text-align:center; transition:0.3s;">
+                            <div style="font-size:1.2rem; margin-bottom:5px;">💳</div>
+                            <div style="font-size:0.75rem; font-weight:600;">Pago en Línea</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="total-row">
+                    <span>Total:</span>
+                    <span id="cartTotalText">$0.00</span>
+                </div>
+                <!-- Botón de Pago Sólido con Borde -->
+                <button class="checkout-btn" id="checkoutBtn" onclick="handleCheckoutFlow()" disabled 
+                        style="background:#8b5cf6; border:2px solid var(--accent-glow); padding:18px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:white; border-radius:12px; transform: scale(1); transition: 0.3s; cursor:pointer;">
+                    Proceder al Pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Envío Inteligente -->
+    <div class="cart-overlay" id="shippingModal" style="display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);">
+        <div class="cart-drawer" style="width:100%; max-width:500px; height:auto; position:relative; right:auto; border-radius:24px; padding:35px; border:1px solid var(--accent-glow);">
+            <h2 style="margin-bottom:10px;">Datos de Entrega</h2>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-bottom:25px;">Necesitamos saber dónde entregar tus productos en El Salvador.</p>
+            
+            <form id="shippingForm" onsubmit="event.preventDefault(); finishOrder();">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--muted); display:block; margin-bottom:5px;">Nombre</label>
+                        <input type="text" id="shipNombre" th:value="${user?.nombre}" required style="background:var(--surface-color); border:1px solid var(--border-color); color:var(--text-primary); padding:12px; border-radius:10px; width:100%;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--muted); display:block; margin-bottom:5px;">Apellido</label>
+                        <input type="text" id="shipApellido" th:value="${user?.apellido}" required style="background:var(--surface-color); border:1px solid var(--border-color); color:var(--text-primary); padding:12px; border-radius:10px; width:100%;">
+                    </div>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <label style="font-size:0.7rem; color:var(--muted); display:block; margin-bottom:5px;">Dirección completa</label>
+                    <textarea id="shipDireccion" th:text="${user?.direccion}" required style="background:var(--surface-color); border:1px solid var(--border-color); color:var(--text-primary); padding:12px; border-radius:10px; width:100%; height:80px;"></textarea>
+                </div>
+                <div style="margin-bottom:25px;">
+                    <label style="font-size:0.7rem; color:var(--muted); display:block; margin-bottom:5px;">Teléfono de Contacto</label>
+                    <input type="text" id="shipTelefono" th:value="${user?.telefono}" required placeholder="Ex: 7777-7777" style="background:var(--surface-color); border:1px solid var(--border-color); color:var(--text-primary); padding:12px; border-radius:10px; width:100%;">
+                </div>
+                
+                <div th:if="${user?.direccion != null}" style="background:rgba(0,240,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px; border:1px dashed var(--accent-glow);">
+                    <p style="font-size:0.8rem; text-align:center;">✨ Hemos cargado tu dirección guardada. Haz clic abajo para confirmar y finalizar.</p>
+                </div>
+
+                <div style="display:flex; gap:10px;">
+                    <button type="button" onclick="closeShipping()" style="flex:1; background:none; border:1px solid var(--border-color); padding:15px; border-radius:12px; color:var(--muted); cursor:pointer;">Cancelar</button>
+                    <button type="submit" style="flex:2; background:var(--accent-glow); color:var(--bg-color); border:none; padding:15px; border-radius:12px; font-weight:800; cursor:pointer;">Confirmar Pedido</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <header>
+        <h1>El Futuro del E-Commerce en El Salvador</h1>
+        <p>Experiencia de compra premium, rápida y segura. Con soporte nativo para pagos locales con Pagadito, Wompi y
+            Bitcoin a través de la red Lightning.</p>
+        <button class="cta-btn" onclick="document.getElementById('productos').scrollIntoView({behavior: 'smooth'})">Ver Catálogo Completo</button>
+    </header>
+ 
+    <section class="products-section" id="productos">
+        <h2 class="section-title">Nuestros Productos</h2>
+        <div class="grid">
+            <div th:each="p : ${productos}" class="product-card">
+                <div class="product-img" style="background:#111;">🏷️</div>
+                <div class="product-info">
+                    <h3 class="product-title" th:text="${p.nombre}">Producto</h3>
+                    <p th:text="${p.descripcion}">Descripción del producto...</p>
+                    <div class="price-row">
+                        <span class="price" th:text="'$' + ${#numbers.formatDecimal(p.precio, 1, 2)}">$0.00</span>
+                    </div>
+                    <div class="qty-row">
+                        <input type="number" class="qty-input" value="1" min="1" th:id="'qty-' + ${p.id}">
+                        <button class="add-btn" 
+                                th:data-name="${p.nombre}"
+                                th:data-price="${p.precio}"
+                                th:data-id="${p.id}"
+                                onclick="handleAddToCart(this)">
+                            Añadir
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mensaje si no hay productos -->
+            <div th:if="${#lists.isEmpty(productos)}" style="grid-column: 1 / -1; text-align: center; padding: 50px; color: var(--text-secondary);">
+                <h3>No hay productos disponibles en este momento.</h3>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 TiendaSV - El Salvador. Todos los derechos reservados.</p>
+    </footer>
+
+    <input type="hidden" id="authStatus" th:value="${#authorization.expression('isAuthenticated()')}">
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        const isLoggedIn = document.getElementById('authStatus').value === 'true';
+
+        let cart = []; // Estado: Array de objetos {name, price}
+
+        function toggleCart(show) {
+            const overlay = document.getElementById('cartOverlay');
+            if (show) overlay.classList.add('active');
+            else overlay.classList.remove('active');
+            updateCartUI();
+        }
+
+        function handleAddToCart(btn) {
+            const name = btn.getAttribute('data-name');
+            const price = btn.getAttribute('data-price');
+            const id = btn.getAttribute('data-id');
+            const inputId = 'qty-' + id;
+            addToCart(name, price, inputId);
+        }
+
+        function addToCart(productName, price, inputId) {
+            const qtyInput = document.getElementById(inputId);
+            const qty = parseInt(qtyInput.value) || 1;
+
+            // Buscar si ya existe para sumar cantidad
+            const existing = cart.find(item => item.name === productName);
+            if (existing) {
+                existing.qty += qty;
+            } else {
+                cart.push({ name: productName, price: parseFloat(price), qty: qty, id: Date.now() });
+            }
+
+            // Animación
+            const cartBtn = document.getElementById('cartBtn');
+            cartBtn.classList.add('pop');
+            setTimeout(() => { cartBtn.classList.remove('pop'); }, 200);
+
+            updateCartCount();
+            showToast(`Se añadió <b>${qty}x ${productName}</b> al resumen.`);
+            qtyInput.value = 1; // Reset
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCartUI();
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartCount').innerText = totalItems;
+        }
+
+        function updateCartUI() {
+            const listEl = document.getElementById('cartList');
+            const totalEl = document.getElementById('cartTotalText');
+            const checkoutBtn = document.getElementById('checkoutBtn');
+
+            if (cart.length === 0) {
+                listEl.innerHTML = '<div class="empty-cart-msg">Tu carrito está vacío</div>';
+                totalEl.innerText = '$0.00';
+                checkoutBtn.disabled = true;
+                return;
+            }
+
+            checkoutBtn.disabled = false;
+            let grandTotal = 0;
+            listEl.innerHTML = '';
+
+            cart.forEach(item => {
+                const subtotal = item.price * item.qty;
+                grandTotal += subtotal;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p>${item.qty}x $${item.price.toFixed(2)} — <b>$${subtotal.toFixed(2)}</b></p>
+                    </div>
+                    <button class="remove-item" onclick="removeFromCart(${item.id})">Quitar</button>
+                `;
+                listEl.appendChild(div);
+            });
+
+            totalEl.innerText = `$${grandTotal.toFixed(2)}`;
+        }
+
+        let currentPayment = 'manual';
+
+        function selectPayment(type) {
+            currentPayment = type;
+            const pm = document.getElementById('payManual');
+            const po = document.getElementById('payOnline');
+            
+            if (type === 'manual') {
+                pm.style.background = 'rgba(255,255,255,0.05)';
+                pm.style.borderColor = 'var(--accent-glow)';
+                po.style.background = 'rgba(255,255,255,0.03)';
+                po.style.borderColor = 'rgba(255,255,255,0.1)';
+            } else {
+                po.style.background = 'rgba(255,255,255,0.05)';
+                po.style.borderColor = 'var(--accent-glow)';
+                pm.style.background = 'rgba(255,255,255,0.03)';
+                pm.style.borderColor = 'rgba(255,255,255,0.1)';
+            }
+        }
+
+        function handleCheckoutFlow() {
+            if (!isLoggedIn) {
+                showToast("Inicia sesión para finalizar tu compra.");
+                setTimeout(() => { window.location.href = '/login'; }, 1200);
+                return;
+            }
+            
+            // Mostrar formulario de envío
+            const modal = document.getElementById('shippingModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+        }
+
+        function closeShipping() {
+            const modal = document.getElementById('shippingModal');
+            modal.classList.remove('active');
+            setTimeout(() => { modal.style.display = 'none'; }, 300);
+        }
+
+        function finishOrder() {
+            const nombre = document.getElementById('shipNombre').value;
+            const direccion = document.getElementById('shipDireccion').value;
+            
+            showToast(`🚀 ¡Gracias ${nombre}! Procesando tu pedido...`);
+            
+            // Simular guardado y redirección
+            setTimeout(() => {
+                if (currentPayment === 'manual') {
+                    showToast("✅ Pedido Confirmado: Te contactaremos al teléfono indicado.");
+                } else {
+                    showToast("💳 Redirigiendo a Pasarela de Pago Seguro...");
+                }
+                
+                setTimeout(() => {
+                    cart = [];
+                    updateCartUI();
+                    updateCartCount();
+                    closeShipping();
+                    toggleCart(false);
+                    window.location.href = '/dashboard';
+                }, 2000);
+            }, 1000);
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

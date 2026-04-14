@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario de Productos — TiendaSV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --panel: #14121d;
+            --border: rgba(255,255,255,0.08);
+            --text: #ffffff;
+            --muted: #8b8b93;
+            --cyan: #00f0ff;
+            --purple: #bc13fe;
+            --orange: #ff8c00;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit', sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 40px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        h1 { font-size: 2.2rem; font-weight: 800; }
+        
+        .btn-new {
+            background: var(--cyan);
+            color: var(--bg);
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn-new:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 240, 255, 0.3); }
+        
+        table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+        th, td { text-align: left; padding: 20px; border-bottom: 1px solid var(--border); }
+        th { background: rgba(255,255,255,0.02); color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .stock-indicator { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--muted); }
+        .stock-dot { width: 8px; height: 8px; border-radius: 50px; }
+        
+        .price { font-size: 1.1rem; font-weight: 800; color: var(--cyan); }
+        
+        .back-link { display: inline-block; margin-top: 30px; color: var(--muted); text-decoration: none; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Inventario de Productos</h1>
+            <a href="/dashboard/productos/nuevo" class="btn-new">+ Cargar Producto</a>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Ref</th>
+                    <th>Producto</th>
+                    <th>Existencias</th>
+                    <th>Precio</th>
+                    <th>Visibilidad</th>
+                    <th>Controles</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${productos}">
+                    <td th:text="'#' + ${p.id}" style="color:var(--muted)">#01</td>
+                    <td>
+                        <div style="font-weight: 600;" th:text="${p.nombre}">Samsung S23 Ultra</div>
+                        <div style="font-size: 0.75rem; color:var(--muted); max-width: 300px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" th:text="${p.descripcion}">Detalles del producto...</div>
+                    </td>
+                    <td>
+                        <div class="stock-indicator">
+                            <div class="stock-dot" th:style="'background:' + (${p.stock > 10 ? '#00ff88' : '#ff4444'})"></div>
+                            <span th:text="${p.stock}">50</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="price" th:text="'$' + ${#numbers.formatDecimal(p.precio, 1, 2)}">$0.00</span>
+                    </td>
+                    <td>
+                        <span style="font-size: 0.8rem; font-weight:700; color:var(--muted)" th:text="${p.activo ? 'PUBLICADO' : 'OCULTO'}">PÚBLICO</span>
+                    </td>
+                    <td>
+                        <a href="#" style="color:var(--cyan); text-decoration: none; font-weight: 700; font-size: 0.85rem;">Gestionar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <a href="/dashboard" class="back-link">← Volver al Panel de Administración</a>
+    </div>
+</body>
+</html>

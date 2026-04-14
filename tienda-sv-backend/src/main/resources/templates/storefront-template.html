@@ -30,19 +30,26 @@
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Navigation */
+        /* Responsive Floating Pill Navigation */
         nav {
             position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 5%;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 1400px;
+            padding: 12px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(13, 15, 26, 0.7);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--surface-border);
+            background: rgba(20, 22, 38, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50px; /* Floating Pill Shape */
             z-index: 100;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
         }
 
         .logo {
@@ -50,11 +57,24 @@
             font-weight: 800;
             letter-spacing: -1px;
             color: var(--accent-glow);
+            flex-shrink: 0;
+            text-decoration: none;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 25px;
+            margin: 0 25px;
+            overflow-x: auto;
+            white-space: nowrap;
+            align-items: center;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        
+        .nav-links::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
         }
 
         .nav-links a {
@@ -73,12 +93,12 @@
             border: 2px solid var(--accent-glow);
             color: var(--accent-glow);
             padding: 8px 20px;
-            border-radius: 8px;
-            /* Cambiado de 50px */
+            border-radius: 50px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            flex-shrink: 0;
         }
 
         .cart-btn:hover {
@@ -95,6 +115,7 @@
             display: flex;
             align-items: center;
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .btn-signin {
@@ -102,13 +123,13 @@
             border: 1px solid rgba(255, 255, 255, 0.25);
             color: var(--text-secondary);
             padding: 8px 20px;
-            border-radius: 8px;
-            /* Cambiado de 50px */
+            border-radius: 50px;
             font-weight: 600;
             font-size: 0.88rem;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .btn-signin:hover {
@@ -118,18 +139,16 @@
 
         .btn-signup {
             background: var(--bg-color);
-            /* Fondo oscuro */
             border: 2px solid var(--accent-purple);
-            /* Borde fuerte */
             color: var(--text-primary);
             padding: 8px 22px;
-            border-radius: 8px;
-            /* Cambiado de 50px */
+            border-radius: 50px;
             font-weight: 800;
             font-size: 0.88rem;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .btn-signup:hover {
@@ -503,13 +522,30 @@
         }
 
         /* ── RESPONSIVE MEDIA QUERIES ────────────────── */
+        @media (max-width: 992px) {
+            nav {
+                flex-wrap: wrap;
+                border-radius: 20px;
+                padding: 15px 20px;
+            }
+            .nav-links {
+                order: 3;
+                width: 100%;
+                margin: 15px 0 0 0;
+                padding-bottom: 5px;
+            }
+        }
+        
         @media (max-width: 768px) {
             nav {
-                padding: 15px 5%;
+                top: 10px;
+                width: 96%;
             }
 
+            /* Enable horizontal scroll on mobile phones too */
             .nav-links {
-                display: none;
+                gap: 15px;
+                font-size: 0.9rem;
             }
 
             .btn-signin {
@@ -517,7 +553,7 @@
             }
 
             .menu-toggle-btn {
-                display: block;
+                display: none; /* We don't need a hamburger if we use elegant scrolling */
             }
 
             header {

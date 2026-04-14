@@ -19,7 +19,7 @@ public class UsuarioUIController {
 
     @org.springframework.web.bind.annotation.PostMapping("/guardar")
     public String guardarUsuario(com.sv.tienda.infrastructure.persistence.UsuarioEntity user,
-                                 @org.springframework.web.bind.annotation.RequestParam(required = false) Long rolId,
+                                 @org.springframework.web.bind.annotation.RequestParam(required = false) Integer rolId,
                                  @org.springframework.web.bind.annotation.RequestParam(required = false) String password,
                                  RedirectAttributes redirectAttributes) {
         try {
